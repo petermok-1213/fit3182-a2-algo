@@ -3,8 +3,8 @@ import random
 '''
     A function for generating a list of random numbers
     Input:
-        size: int
-        limit: int
+        size: length of the output list
+        limit: maximum value of elements
     Output:
         a list with length == size of random integers with values in the range of 0 to limit-1 inclusively
 '''
@@ -19,14 +19,16 @@ def get_rand_data(size: int, limit: int) -> list:
     In-place Partitioning function for quick sort, pivot is randomly chosen
     returns the pivot index
     Input:
-        arr: list[int]
+        arr: the list to be partitioned
+        left: start partitioning from this index
+        right: stop partitioning at this index
     Output:
         pivot_index: int
 '''
 def rand_partition(arr: list[int], left: int, right: int) -> int:
     pivot_index = random.randrange(start=left, stop=right)  # selecting a random index as pivot
     store_index = left
-    for i in range(left, right):
+    for i in range(left, right+1):
         if arr[i] < arr[pivot_index] and i != pivot_index:  # if element i is smaller than pivot
             arr[store_index], arr[i] = arr[i], arr[store_index]  # swap elements in i and store_index
             if pivot_index == store_index:  # if element i is swapped with pivot
@@ -39,18 +41,24 @@ def rand_partition(arr: list[int], left: int, right: int) -> int:
 
 
 '''
-
+    In-place random quick sort algorithm
+    Input:
+        arr: the list to be partitioned
+        left: start partitioning from this index
+        right: stop partitioning at this index
 '''
-def pqsa(arr: list[int], left: int, right: int):
+def rand_qs(arr: list[int], left: int, right: int) -> None:
     if right > left:
         pivot = rand_partition(arr, left, right)
-        pqsa(arr, left, pivot)
-        pqsa(arr, pivot+1, right)
+        rand_qs(arr, left, pivot)
+        rand_qs(arr, pivot+1, right)
 
 
 if __name__ == "__main__":
     random.seed(31266797)
-    data = get_rand_data(20, 20)
+    size = 20
+    limit = 20
+    data = get_rand_data(size, limit)
     print(data)
-    pqsa(data, 0, len(data))
+    rand_qs(data, 0, len(data)-1)
     print(data)
