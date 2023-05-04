@@ -1,18 +1,16 @@
+import copy
 import random
 
 '''
     A function for generating a list of random numbers
     Input:
-        size: length of the output list
-        limit: maximum value of elements
+        length: length of the output list
+        max_val: maximum value of elements
     Output:
         a list with length == size of random integers with values in the range of 0 to limit-1 inclusively
 '''
-def get_rand_data(size: int, limit: int) -> list:
-    int_list = []
-    for _ in range(size):
-        int_list.append(random.randrange(start=0, stop=limit))
-    return int_list
+def get_rand_data(length: int, max_val: int) -> list:
+    return [random.randrange(start=0, stop=max_val) for _ in range(length)]
 
 
 '''
@@ -53,12 +51,16 @@ def rand_qs(arr: list[int], left: int, right: int) -> None:
         rand_qs(arr, left, pivot)
         rand_qs(arr, pivot+1, right)
 
+def test_rand_qs():
+    size_20 = 20
+    limit_20 = 20
+    data = get_rand_data(size_20, limit_20)
+    test = copy.deepcopy(data)
+    rand_qs(data, 0, len(data)-1)
+    test.sort()
+    print(data == test)
+
 
 if __name__ == "__main__":
     random.seed(31266797)
-    size = 20
-    limit = 20
-    data = get_rand_data(size, limit)
-    print(data)
-    rand_qs(data, 0, len(data)-1)
-    print(data)
+    print(get_rand_data(10, 10))
