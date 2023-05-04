@@ -51,16 +51,31 @@ def rand_qs(arr: list[int], left: int, right: int) -> None:
         rand_qs(arr, left, pivot)
         rand_qs(arr, pivot+1, right)
 
-def test_rand_qs():
-    size_20 = 20
-    limit_20 = 20
-    data = get_rand_data(size_20, limit_20)
-    test = copy.deepcopy(data)
+
+'''
+    Function for testing rand_qs()
+    Input:
+        length: length of the array
+        max_val: maximum value of elements
+    Output:
+        pass: array is sorted
+'''
+def test_rand_qs(length: int, max_val: int):
+    data = get_rand_data(length, max_val)
+    test_data = copy.deepcopy(data)
     rand_qs(data, 0, len(data)-1)
-    test.sort()
-    print(data == test)
+    test_data.sort()
+    return data == test_data
 
 
 if __name__ == "__main__":
     random.seed(31266797)
-    print(get_rand_data(10, 10))
+    i = 0
+    for length in range(10, 1000):
+        for max_val in range(10, 1000):
+            print(i)
+            i += 1
+            if not test_rand_qs(length, max_val):
+                print("Length=", length)
+                print("Max_Val=", max_val)
+                break
