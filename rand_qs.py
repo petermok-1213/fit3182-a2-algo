@@ -45,12 +45,12 @@ def rand_partition(arr: list[int], left: int, right: int) -> int:
         left: start partitioning from this index
         right: stop partitioning at this index
 '''
-def rand_qs(arr: list[int], left: int, right: int) -> None:
+def rand_qs(arr: list[int], left: int, right: int) -> list[int]:
     if right > left:
         pivot = rand_partition(arr, left, right)
         rand_qs(arr, left, pivot)
         rand_qs(arr, pivot+1, right)
-
+    return arr
 
 '''
     Function for testing rand_qs()
@@ -70,11 +70,11 @@ def test_rand_qs(length: int, max_val: int):
 
 if __name__ == "__main__":
     random.seed(31266797)
-    i = 0
+    run = 0
     for length in range(10, 1000):
         for max_val in range(10, 1000):
-            print(i)
-            i += 1
+            print(run)
+            run += 1
             if not test_rand_qs(length, max_val):
                 print("Length=", length)
                 print("Max_Val=", max_val)
