@@ -2,7 +2,7 @@ import copy
 import random
 import sys
 import threading
-from rand_qs import get_rand_data, rand_partition, rand_qs
+from rand_qs import rand_partition
 import time
 
 '''

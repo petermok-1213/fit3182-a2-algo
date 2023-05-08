@@ -20,5 +20,5 @@ if __name__ == "__main__":
     main_pqsa_thread = pqsa.PQSAThread(copy.deepcopy(data), 0, n - 1, name="PQSA")
     print_sorting_time(main_pqsa_thread)
 
-    rand_qs_thread = threading.Thread(target=rand_qs.rand_qs, args=(copy.deepcopy(data), 0, n - 1), name="Random Quick Sort")
+    rand_qs_thread = threading.Thread(target=rand_qs.rs_rand_qs, args=(copy.deepcopy(data), 0, n - 1), name="Random Quick Sort")
     print_sorting_time(rand_qs_thread)

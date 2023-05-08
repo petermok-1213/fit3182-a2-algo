@@ -39,17 +39,17 @@ def rand_partition(arr: list[int], left: int, right: int) -> int:
 
 
 '''
-    In-place random quick sort algorithm
+    In-place recursive random quick sort algorithm
     Input:
         arr: the list to be partitioned
         left: start partitioning from this index
         right: stop partitioning at this index
 '''
-def rand_qs(arr: list[int], left: int, right: int) -> list[int]:
+def rs_rand_qs(arr: list[int], left: int, right: int) -> list[int]:
     if right > left:
         pivot = rand_partition(arr, left, right)
-        rand_qs(arr, left, pivot)
-        rand_qs(arr, pivot+1, right)
+        rs_rand_qs(arr, left, pivot)
+        rs_rand_qs(arr, pivot + 1, right)
     return arr
 
 '''
@@ -63,7 +63,7 @@ def rand_qs(arr: list[int], left: int, right: int) -> list[int]:
 def test_rand_qs(length: int, max_val: int):
     data = get_rand_data(length, max_val)
     test_data = copy.deepcopy(data)
-    rand_qs(data, 0, len(data)-1)
+    rs_rand_qs(data, 0, len(data) - 1)
     test_data.sort()
     return data == test_data
 
