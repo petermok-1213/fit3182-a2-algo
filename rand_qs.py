@@ -37,6 +37,24 @@ def rand_partition(arr: list[int], left: int, right: int) -> int:
     pivot_index = store_index  # update pivot_index
     return pivot_index
 
+"""
+    In-place iterative random quick sort algorithm
+    Inputs:
+        arr: list to be sorted
+        left: sort from this index
+        right: sort to this index
+"""
+def it_rand_qs(arr: list[int], left: int, right: int):
+    stack = []                      # stack for index-pair of the array
+    stack.insert(0, (left, right))  # initial (partition from, partition to) pair
+    while len(stack) > 0:
+        left, right = stack.pop(0)  # get index-pair to partition
+        pivot = rand_partition(arr, left, right)    # partition arr and get pivot
+        if pivot-1 > left:                          # If there are elements left of pivot
+            stack.insert(0, (left, pivot-1))
+        if pivot+1 < right:
+            stack.insert(0, (pivot+1, right))
+
 
 '''
     In-place recursive random quick sort algorithm
@@ -70,12 +88,10 @@ def test_rand_qs(length: int, max_val: int):
 
 if __name__ == "__main__":
     random.seed(31266797)
-    run = 0
-    for length in range(10, 1000):
-        for max_val in range(10, 1000):
-            print(run)
-            run += 1
-            if not test_rand_qs(length, max_val):
-                print("Length=", length)
-                print("Max_Val=", max_val)
-                break
+    n = 100
+    data = get_rand_data(n, 100)
+    test_data = copy.deepcopy(data)
+    test_data.sort()
+
+    it_rand_qs(data, 0, len(data)-1)
+    print(data == test_data)
