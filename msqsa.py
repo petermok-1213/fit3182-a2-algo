@@ -25,22 +25,29 @@ def partition_by_threads(arr: list[int], n: int, partitions: list[list[int]]) ->
 """
     Iterative 2-way merge sort
     Input:
-        partitions: list of partitions to be merged into 1
+        arr: list of partitions
+        left: merge from this index
+        length: length of each sorted section
     Output:
         partitions[0]: the final merged partition
 """
-def merge(partitions: list[list[int]]) -> list[int]:
-    while len(partitions) > 1:                      # while there are multiple partitions
-        left = partitions.pop(0)                    # pop top 2 partitions
-        right = partitions.pop(0)                   # --
-        result = []                                 # init placeholder for the sub-result
-        while len(left) > 0 and len(right) > 0:     # while they are not empty
-            if left[0] < right[0]:                  ###
-                result.append(left.pop(0))          # pop the smaller element to the end
-            else:                                   # of result
-                result.append(right.pop(0))         ###
-        partitions.append(result)                   # put result at the end of the queue
-    return partitions[0]                            # [[result]] -> [result]
+def merge(arr: list[int], left: int, length: int) -> list[int]:
+    mid = left + length         # the middle index
+    right = left + 2*length -1  # the right most index
+    if right >= len(arr):
+        right = len(arr)-1
+    l_ptr = left                # pointer for the left sorted list
+    r_ptr = mid + 1             # pointer for the right sorted list
+
+    while l_ptr < mid and r_ptr < right:
+        if arr[l_ptr] < arr[r_ptr]:
+            l_ptr += 1
+        else:
+            arr.insert(l_ptr, arr.pop(r_ptr))
+            l_ptr += 1
+            r_ptr += 1
+            mid += 1
+
 
 """
     Implementation of Merging Subarrys from Quick Sort Algorithm
@@ -50,31 +57,34 @@ def merge(partitions: list[list[int]]) -> list[int]:
 """
 def msqsa(arr: list[int], n: int) -> None:
 
-    partitions = []
-    partition_thread = threading.Thread(
-        target=partition_by_threads,
-        args=(arr, n, partitions)
-    )
-    partition_thread.start()
-    partition_thread.join()
-
+    # Creates n child threads sorting their corresponding portion
     threads = []
+    length = int(len(arr)/n)          # length of each portion
     for i in range(n):
         threads.append(threading.Thread(
             target=it_rand_qs,
-            args=(partitions[i], 0, len(partitions[i])-1)
+            args=(arr, i*length, (i+1)*(length-1))
         ))
     for thread in threads:
         thread.start()
     for thread in threads:
         thread.join()
 
-    partitions = merge(partitions)
-    print(partitions)
+    # Merge-Sort the sorted sub-arrays
+    length = int(len(arr)/n)
+    left = 0
+    while length < len(arr):
+        while left + length < len(arr):
+            merge(arr, left, length)
+            left = left + length
+        length = length * 2
+        left = 0
+
+    print(arr)
 
 if __name__ == "__main__":
 
     random.seed(31266797)
 
-    msqsa(get_rand_data(1000, 10), 8)
+    msqsa(get_rand_data(100, 10), 10)
 

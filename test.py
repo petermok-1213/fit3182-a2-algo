@@ -12,13 +12,11 @@ def print_sorting_time(sorting_thread: threading.Thread) -> None:
 
 if __name__ == "__main__":
     random.seed(3126679)
-    n = 1000
+    n = 10000
     sys.setrecursionlimit(n)  # force increase maximum recursion depth to avoid Exception
 
     data = rand_qs.get_rand_data(n, 100)
+    rand_qs.it_rand_qs(data, 0, len(data) - 1)
 
-    main_pqsa_thread = pqsa.PQSAThread(copy.deepcopy(data), 0, n - 1, name="PQSA")
-    print_sorting_time(main_pqsa_thread)
+    print(data == sorted(data))
 
-    rand_qs_thread = threading.Thread(target=rand_qs.rs_rand_qs, args=(copy.deepcopy(data), 0, n - 1), name="Random Quick Sort")
-    print_sorting_time(rand_qs_thread)
