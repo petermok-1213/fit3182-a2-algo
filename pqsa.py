@@ -19,7 +19,7 @@ class PQSAThread(threading.Thread):
             right sort to this index
     """
     def __init__(self, arr: list[int], left: int, right: int, name=None):
-        threading.Thread.__init__(self, name=name)
+        super(self, name=name)
         self.arr = arr
         self.left = left
         self.right = right
