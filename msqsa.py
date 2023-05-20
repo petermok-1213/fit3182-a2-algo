@@ -1,5 +1,6 @@
 import random
 import threading
+import time
 from rand_qs import get_rand_data, it_rand_qs
 
 
@@ -34,13 +35,21 @@ def merge(partitions: list[list[int]]) -> list[int]:
         left = partitions.pop(0)                    # pop top 2 partitions
         right = partitions.pop(0)                   # --
         result = []                                 # init placeholder for the sub-result
+
         while len(left) > 0 and len(right) > 0:     # while they are not empty
             if left[0] < right[0]:                  ###
                 result.append(left.pop(0))          # pop the smaller element to the end
             else:                                   # of result
                 result.append(right.pop(0))         ###
+
+        while len(left) > 0:                        # while there are elements remain in left or right
+            result.append(left.pop(0))              # push the remaining elements in result
+        while len(right) > 0:                       #
+            result.append(right.pop(0))             #
+
         partitions.append(result)                   # put result at the end of the queue
-    return partitions[0]                            # [[result]] -> [result]
+
+    return partitions[0]                            # [result] -> result
 
 """
     Implementation of Merging Subarrys from Quick Sort Algorithm
@@ -48,33 +57,36 @@ def merge(partitions: list[list[int]]) -> list[int]:
         arr: list to be sorted
         n: number of threads
 """
-def msqsa(arr: list[int], n: int) -> None:
+def msqsa(arr: list[int], n: int) -> list[int]:
 
-    partitions = []
-    partition_thread = threading.Thread(
+    partitions = []     # for storing partitions of arr as partition_by_threads is in-place
+    partition_thread = threading.Thread(    # instantiate threads for partitioning data
         target=partition_by_threads,
         args=(arr, n, partitions)
     )
-    partition_thread.start()
-    partition_thread.join()
+    partition_thread.start()                # run thread
+    partition_thread.join()                 # until arr is partitioned
 
-    threads = []
-    for i in range(n):
+    threads = []                            # local thread pool
+    for i in range(n):                      # pushing threads for sorting into thread pool
         threads.append(threading.Thread(
             target=it_rand_qs,
             args=(partitions[i], 0, len(partitions[i])-1)
         ))
-    for thread in threads:
+    for thread in threads:                  # run all threads
         thread.start()
-    for thread in threads:
+    for thread in threads:                  # until threads are done running
         thread.join()
 
-    partitions = merge(partitions)
-    print(partitions)
+    return merge(partitions)
+
 
 if __name__ == "__main__":
 
     random.seed(31266797)
-
-    msqsa(get_rand_data(1000, 10), 8)
-
+    data = get_rand_data(1000000, 10)
+    test = sorted(data)
+    start = time.time()
+    data = msqsa(data, 16)
+    print(time.time()-start)
+    print(data == test)
