@@ -1,5 +1,5 @@
-from threading import Thread
 from queue import Queue
+
 
 class Singleton(type):
     _instances = {}
@@ -9,16 +9,18 @@ class Singleton(type):
         return cls._instances[cls]
 
 class ThreadPool(metaclass=Singleton):
-    def __init__(self, max_thread: int):
-        self.pool = Queue(maxsize=max_thread)
+    def __init__(self):
+        self.pool = Queue()
+
+
+def worker():
+    while True:
+        task = ThreadPool().pool.get()
+        task.start()
+        task.join()
+        ThreadPool().pool.task_done()
 
 
 if __name__ == "__main__":
 
-    threadpool = ThreadPool(8)
-    print(threadpool.pool.maxsize)
-
-    threadpool2 = ThreadPool()
-    print(threadpool2.pool.maxsize)
-
-    print(id(threadpool) == id(threadpool2))
+    pass
