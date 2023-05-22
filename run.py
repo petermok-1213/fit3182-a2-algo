@@ -1,5 +1,6 @@
 from threading import Thread
 
+from msqsa import msqsa
 from pqsa import pqsa
 from rand_qs import get_rand_data
 from threadpool import ThreadPool
@@ -28,26 +29,32 @@ if __name__ == "__main__":
             "Awaiting command...\n"
         )
         cmd_parts = cmd.split(" ")
+
         if cmd_parts[0] == "cmds":
             cmds()
-        elif cmd_parts[0] == "pqsa":
-            data_size = int(cmd_parts[1])
-            max_val = int(cmd_parts[2])
-            data = get_rand_data(data_size, max_val)
+        elif cmd_parts[0] in ["pqsa", "msqsa", "msqsa_mod"]:
+            try:
+                data_size = int(cmd_parts[1])
+                max_val = int(cmd_parts[2])
+                max_worker = int(cmd_parts[3])
+            except ValueError:
+                print("Value Error")
+                break
+            else:
+                data = get_rand_data(data_size, max_val)
+                threadpool = ThreadPool(max_worker)
 
-            max_worker = int(cmd_parts[3])
-            threadpool = ThreadPool(max_worker)
-            threadpool.pool.put(Thread(target=pqsa, args=(data, 0, len(data)-1)))
-            threadpool.start_worker()
-            threadpool.pool.join()
-            threadpool.stop_worker()
+                if cmd_parts[0] == "pqsa":
+                    threadpool.pool.put(Thread(target=pqsa, args=(data, 0, len(data)-1)))
+                elif cmd_parts[0] == "msqsa":
+                    threadpool.pool.put(Thread(target=msqsa, args=(data, max_worker)))
+                elif cmd_parts[0] == "msqsa_mod":
+                    threadpool.pool.put(Thread(target=msqsa, args=(data, max_worker)))
 
-            print(data == sorted(data))
+                threadpool.start_worker()
+                threadpool.pool.join()
+                threadpool.stop_worker()
+                print(data == sorted(data))
 
-
-        elif cmd_parts[0] == "msqsa":
-            pass
-        elif cmd_parts[0] == "msqsa_mod":
-            pass
         else:
             print("invalid command")
