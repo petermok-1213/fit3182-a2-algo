@@ -11,6 +11,7 @@ class Singleton(type):
         return cls._instances[cls]
 
 class ThreadPool(metaclass=Singleton):
+
     def __init__(self, n: int):
         self.pool = Queue()
         self.max_worker = n
@@ -38,8 +39,6 @@ class ThreadPool(metaclass=Singleton):
         for worker in self.workers:
             worker.start()
 
-
-
     def stop_worker(self):
         print("Stopping Workers")
         for worker in self.workers:
@@ -47,5 +46,4 @@ class ThreadPool(metaclass=Singleton):
 
 
 if __name__ == "__main__":
-
     pass

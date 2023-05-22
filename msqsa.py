@@ -1,5 +1,5 @@
 import random
-import threading
+from threading import Thread
 import time
 from rand_qs import get_rand_data, it_rand_qs
 
@@ -12,16 +12,13 @@ from rand_qs import get_rand_data, it_rand_qs
     Output:
         partitions: list of partitions each for one thread
 """
-def partition_by_threads(arr: list[int], n: int, partitions: list[list[int]]) -> list[list[int]]:
+def partition_by_threads(arr: list[int], partitions: list[list[int]], n: int, thread_index: int) -> None:
     cur_partition = []
-    cur_index = 0
-    while len(partitions) < n:
-        while (len(cur_partition) < len(arr)/n) and cur_index < len(arr):
-            cur_partition.append(arr[cur_index])
-            cur_index += 1
-        partitions.append(cur_partition)
-        cur_partition = []
-    return partitions
+    cur_index = int(len(arr)/n)*thread_index
+    while (len(cur_partition) < len(arr)/n) and cur_index < len(arr):
+        cur_partition.append(arr[cur_index])
+        cur_index += 1
+    partitions.append(cur_partition)
 
 """
     Iterative 2-way merge sort
@@ -59,17 +56,21 @@ def merge(partitions: list[list[int]]) -> list[int]:
 """
 def msqsa(arr: list[int], n: int) -> list[int]:
 
-    partitions = []     # for storing partitions of arr as partition_by_threads is in-place
-    partition_thread = threading.Thread(    # instantiate threads for partitioning data
-        target=partition_by_threads,
-        args=(arr, n, partitions)
-    )
-    partition_thread.start()                # run thread
-    partition_thread.join()                 # until arr is partitioned
-
     threads = []                            # local thread pool
+    partitions = []     # for storing partitions of arr as partition_by_threads is in-place
+    for i in range(n):
+        threads.append(Thread(    # instantiate threads for partitioning data
+        target=partition_by_threads,
+        args=(arr, partitions, n, i)
+    ))
+    for thread in threads:                  # run all threads
+        thread.start()
+    for thread in threads:                  # until threads are done running
+        thread.join()
+    threads = []
+
     for i in range(n):                      # pushing threads for sorting into thread pool
-        threads.append(threading.Thread(
+        threads.append(Thread(
             target=it_rand_qs,
             args=(partitions[i], 0, len(partitions[i])-1)
         ))
@@ -84,9 +85,9 @@ def msqsa(arr: list[int], n: int) -> list[int]:
 if __name__ == "__main__":
 
     random.seed(31266797)
-    data = get_rand_data(1000000, 10)
+    data = get_rand_data(10000, 10)
     test = sorted(data)
     start = time.time()
-    data = msqsa(data, 16)
+    data = msqsa(data, 4)
     print(time.time()-start)
     print(data == test)
