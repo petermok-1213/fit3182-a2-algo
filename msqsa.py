@@ -12,16 +12,15 @@ from rand_qs import get_rand_data, it_rand_qs
     Output:
         partitions: list of partitions each for one thread
 """
-def partition_by_threads(arr: list[int], n: int, partitions: list[list[int]]) -> list[list[int]]:
+def partition_by_threads(arr: list[int], thread_num: int, partitions: list[list[int]]) -> list[list[int]]:
     cur_partition = []
     cur_index = 0
-    while len(partitions) < n:
-        while (len(cur_partition) < len(arr)/n) and cur_index < len(arr):
-            cur_partition.append(arr[cur_index])
-            cur_index += 1
-        partitions.append(cur_partition)
-        cur_partition = []
-    return partitions
+    while (len(cur_partition) < len(arr)/n) and cur_index < len(arr):
+        cur_partition.append(arr[cur_index])
+        cur_index += 1
+    partitions.append(cur_partition)
+    cur_partition = []
+
 
 """
     Iterative 2-way merge sort
@@ -51,13 +50,17 @@ def merge(partitions: list[list[int]]) -> list[int]:
 
     return partitions[0]                            # [result] -> result
 
+
+def msqsa():
+    pass
+
 """
     Implementation of Merging Subarrys from Quick Sort Algorithm
     Input:
         arr: list to be sorted
         n: number of threads
 """
-def msqsa(arr: list[int], n: int) -> list[int]:
+def msqsa_mod(arr: list[int], n: int) -> list[int]:
 
     partitions = []     # for storing partitions of arr as partition_by_threads is in-place
     partition_thread = threading.Thread(    # instantiate threads for partitioning data
@@ -79,14 +82,3 @@ def msqsa(arr: list[int], n: int) -> list[int]:
         thread.join()
 
     return merge(partitions)
-
-
-if __name__ == "__main__":
-
-    random.seed(31266797)
-    data = get_rand_data(1000000, 10)
-    test = sorted(data)
-    start = time.time()
-    data = msqsa(data, 16)
-    print(time.time()-start)
-    print(data == test)
