@@ -8,9 +8,9 @@ from rand_qs import get_rand_data, it_rand_qs
     Partition data based on the given number of threads
     Input:
         arr: list to be partitioned
+        partitions: list of partition
         n: number of threads
-    Output:
-        partitions: list of partitions each for one thread
+        thread_index: index of THIS thread
 """
 def partition_by_threads(arr: list[int], partitions: list[list[int]], n: int, thread_index: int) -> None:
     cur_partition = []
@@ -85,9 +85,8 @@ def msqsa(arr: list[int], n: int) -> list[int]:
 if __name__ == "__main__":
 
     random.seed(31266797)
-    data = get_rand_data(10000, 10)
-    test = sorted(data)
+    data = get_rand_data(1000000, 100)
     start = time.time()
-    data = msqsa(data, 4)
+    data = msqsa(data, 5196)
     print(time.time()-start)
-    print(data == test)
+    print(data == sorted(data))

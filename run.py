@@ -1,3 +1,4 @@
+import time
 from threading import Thread
 
 from msqsa import msqsa
@@ -45,16 +46,19 @@ if __name__ == "__main__":
                 threadpool = ThreadPool(max_worker)
 
                 if cmd_parts[0] == "pqsa":
+                    start = time.time()
                     threadpool.pool.put(Thread(target=pqsa, args=(data, 0, len(data)-1)))
+                    threadpool.start_worker()
+                    threadpool.pool.join()
+                    threadpool.stop_worker()
+                    end = time.time()
                 elif cmd_parts[0] == "msqsa":
-                    threadpool.pool.put(Thread(target=msqsa, args=(data, max_worker)))
+                    msqsa(data, max_worker)
                 elif cmd_parts[0] == "msqsa_mod":
                     threadpool.pool.put(Thread(target=msqsa, args=(data, max_worker)))
 
-                threadpool.start_worker()
-                threadpool.pool.join()
-                threadpool.stop_worker()
                 print(data == sorted(data))
+                print(end-start)
 
         else:
             print("invalid command")
